@@ -317,19 +317,19 @@
         }
 
         const keyboardLayouts = {
-            phonetic: [
-                ["Й", "Ц", "У", "К", "Е", "Н", "Г", "Ш", "Щ", "З", "Х"],
-                ["Ф", "Ъ", "В", "А", "П", "Р", "О", "Л", "Д", "Ж"],
-                ["ENTER", "Я", "Ч", "С", "М", "И", "Т", "Ь", "Б", "Ю", "BACK"]
-            ],
             yavert: [
                 ["Я", "В", "Е", "Р", "Т", "Ъ", "Й", "Ц", "У", "К"],
                 ["А", "С", "Д", "Ф", "Г", "Х", "Ж", "З", "И", "О"],
                 ["ENTER", "П", "Л", "Ь", "Щ", "Ш", "Н", "М", "Б", "Ю", "Ч", "BACK"]
+            ],
+            second: [
+                ["У", "Е", "Ш", "Щ", "З", "Х", "Ъ", "Й", "Ц", "К"],
+                ["А", "С", "Д", "Ф", "Г", "Ж", "И", "О", "П", "М"],
+                ["ENTER", "Я", "Ч", "С", "Т", "Ь", "Б", "Ю", "Н", "В", "BACK"]
             ]
         };
 
-        let currentLayout = "phonetic";
+        let currentLayout = "yavert";
 
         function renderKeyboard(layoutName) {
             [1, 2, 3].forEach(index => {
@@ -350,7 +350,7 @@
         }
 
         document.getElementById("toggleKeyboard").addEventListener("click", () => {
-            currentLayout = currentLayout === "phonetic" ? "yavert" : "phonetic";
+            currentLayout = currentLayout === "yavert" ? "second" : "yavert";
             renderKeyboard(currentLayout);
         });
 
@@ -363,7 +363,7 @@
         });
 
         document.getElementById("toggleKeyboardMobile").addEventListener("click", () => {
-            currentLayout = currentLayout === "phonetic" ? "yavert" : "phonetic";
+            currentLayout = currentLayout === "yavert" ? "second" : "yavert";
             renderKeyboard(currentLayout);
             document.getElementById("settingsPanel").classList.remove("show");
         });
