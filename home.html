@@ -7,45 +7,39 @@
     <style>
         body {
             margin: 0;
-            padding: 20px;
+            padding: 12px 8px;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
             min-height: 100vh;
             background: #121213;
             font-family: Arial, sans-serif;
-        }
-
-        .container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
-        }
-
-        h1 {
-            color: #fff;
-            margin: 0;
+        /* No per-row overrides here; bottom-row uses the shared .key rules */
+            text-align: center;
         }
 
         #board {
             display: grid;
-            grid-template-columns: repeat(5, 60px);
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            width: min(100%, 340px);
+            margin: 0 auto; /* center the board container */
+            justify-items: center; /* center tiles inside grid cells */
             gap: 5px;
-            margin-bottom: 20px;
+            margin-bottom: 8px;
         }
 
         .tile {
-            width: 60px;
-            height: 60px;
+            width: 100%;
+            aspect-ratio: 1;
             border: 2px solid #565758;
             background: #121213;
             color: #fff;
-            font-size: 32px;
+            font-size: clamp(20px, 5.5vw, 32px);
             font-weight: bold;
             display: flex;
             justify-content: center;
             align-items: center;
+            box-sizing: border-box;
         }
 
         .tile.correct {
@@ -68,16 +62,17 @@
             flex-direction: column;
             gap: 6px;
             width: 100%;
-            max-width: 760px;
-            padding: 10px 0;
+            max-width: 100%;
+            padding: 8px;
             border-radius: 12px;
             background: rgba(255, 255, 255, 0.04);
             border: 1px solid rgba(255, 255, 255, 0.08);
+            box-sizing: border-box;
         }
 
         .key-row {
             display: flex;
-            gap: 6px;
+            gap: 4px;
             justify-content: center;
         }
 
@@ -155,17 +150,17 @@
         }
 
         .key {
-            padding: 10px 8px;
+            padding: 0 1px;
             background: #818384;
             border: none;
             border-radius: 8px;
             color: #fff;
-            font-size: 14px;
+            font-size: clamp(11px, 2.5vw, 14px);
             font-weight: bold;
             cursor: pointer;
-            flex: 1 0 0;
-            min-width: 32px;
-            height: 52px;
+            flex: 1.15 1 0;
+            min-width: 0;
+            height: clamp(42px, 9.5vw, 52px);
             transition: background 0.2s, transform 0.12s;
         }
 
@@ -175,9 +170,57 @@
         }
 
         .key.wide {
-            min-width: 68px;
-            flex: 1.4 0 0;
-            padding: 0 14px;
+            flex: 0 0 67px;
+            min-width: 0;
+            padding: 0 4px;
+            font-size: clamp(12px, 2.8vw, 14px);
+            line-height: 1;
+            white-space: nowrap;
+            max-width: 67px;
+        }
+
+        /* Bottom-row (row-3) letter keys: wider and centered, keep .wide (ENTER/BACK) unchanged */
+        #row-3 {
+            justify-content: center;
+            gap: 4px;
+        }
+
+        #row-3 .key:not(.wide) {
+            flex: 1.45 1 0;
+            min-width: 30px;
+        }
+
+        /* Bottom-row letter keys slightly wider (keep ENTER/BACK as .wide) */
+        #row-3 .key:not(.wide) {
+            flex: 1.45 1 0;
+            min-width: 28px;
+        }
+
+        @media (max-width: 360px) {
+            .key-row {
+                gap: 3px;
+            }
+
+            .key {
+                height: 38px;
+                font-size: 10px;
+            }
+            /* Mobile: bottom-row letter keys tuned for small screens */
+            #row-3 {
+                gap: 4px;
+            }
+
+            #row-3 .key:not(.wide) {
+                flex: 1.05 1 0;
+                min-width: 20px;
+            }
+
+            .key.wide {
+                flex: 0 0 56px;
+                font-size: 10px;
+                padding: 0 2px;
+                max-width: 56px;
+            }
         }
 
         .key.correct {
@@ -245,6 +288,21 @@
         .modal-content button:hover {
             background: #6ba85f;
         }
+
+        .status-message {
+            min-height: 22px;
+            color: #f5f5f5;
+            font-size: 14px;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(4px);
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+
+        .status-message.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
     </style>
 </head>
 <body>
@@ -256,6 +314,7 @@
             <div class="key-row" id="row-2"></div>
             <div class="key-row" id="row-3"></div>
         </div>
+        <div id="statusMessage" class="status-message" aria-live="polite"></div>
         <button id="toggleKeyboard" class="toggle-button">Смени клавиатура</button>
         <button id="openSettings" class="settings-button">Настройки</button>
     </div>
@@ -340,7 +399,9 @@
                 const rowEl = document.getElementById(`row-${rowIndex + 1}`);
                 row.forEach(key => {
                     const btn = document.createElement("button");
-                    btn.innerText = key;
+                    const label = key === "ENTER" ? "↵" : key === "BACK" ? "⌫" : key;
+                    btn.innerText = label;
+                    btn.title = key === "ENTER" ? "Enter" : key === "BACK" ? "Backspace" : key;
                     btn.classList.add("key");
                     if (key === "ENTER" || key === "BACK") btn.classList.add("wide");
                     btn.addEventListener("click", () => handleInput(key));
@@ -389,7 +450,12 @@
                 }
             } else if (key === "ENTER") {
                 if (currentGuess.length === 5) checkWord();
-                else showModal("Грешка", "Недостатъчно букви!");
+                else {
+                    const message = currentGuess.length === 0
+                        ? "Няма въведени букви!"
+                        : "Не е въведена пълна дума!";
+                    showStatusMessage(message);
+                }
             } else if (currentCol < 5) {
                 const tile = document.getElementById(`${currentRow}-${currentCol}`);
                 tile.innerText = key;
@@ -401,7 +467,7 @@
         // 5. Game Logic
         function checkWord() {
             if (!validWords.includes(currentGuess)) {
-                showModal("Грешка", "Думата я няма в списъка!");
+                showStatusMessage("Думата е грешна или не съществува!");
                 // Reset current row for retry
                 for (let i = 0; i < 5; i++) {
                     const tile = document.getElementById(`${currentRow}-${i}`);
@@ -456,6 +522,17 @@
             document.getElementById("modalTitle").innerText = title;
             document.getElementById("modalMessage").innerText = message;
             document.getElementById("gameModal").classList.add("show");
+        }
+
+        function showStatusMessage(message) {
+            const statusEl = document.getElementById("statusMessage");
+            statusEl.innerText = message;
+            statusEl.classList.add("show");
+            clearTimeout(showStatusMessage.timeoutId);
+            showStatusMessage.timeoutId = setTimeout(() => {
+                statusEl.classList.remove("show");
+                statusEl.innerText = "";
+            }, 1400);
         }
 
         function updateKeyboard(letter, status) {
