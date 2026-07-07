@@ -4,85 +4,219 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wordle България</title>
-    <style>
+        <style>
+        :root {
+            --bg: #121213;
+            --text: #ffffff;
+            --tile-bg: #121213;
+            --tile-border: #3a3a3c;
+            --key-bg: #818384;
+            --key-text: #ffffff;
+            --modal-bg: #1e1e1e;
+            --correct: #538d4e;
+            --present: #b59f3b;
+            --absent: #3a3a3c;
+            --absent-border: #565758;
+            --header-border: #3a3a3c;
+            --key-height: 58px;
+            --key-gap: 6px;
+            --key-font-size: 14px;
+            --keyboard-padding: 10px;
+        }
+
+        body.light-mode {
+            --bg: #ffffff;
+            --text: #1a1a1b;
+            --tile-bg: #ffffff;
+            --tile-border: #d3d6da;
+            --key-bg: #d3d6da;
+            --key-text: #1a1a1b;
+            --modal-bg: #ffffff;
+            --absent: #787c7e;
+            --absent-border: #787c7e;
+            --header-border: #d3d6da;
+        }
+
         body {
             margin: 0;
-            padding: 12px 8px;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        header {
             display: flex;
             justify-content: center;
-            align-items: flex-start;
-            min-height: 100vh;
-            background: #121213;
-            font-family: Arial, sans-serif;
-        /* No per-row overrides here; bottom-row uses the shared .key rules */
-            text-align: center;
+            align-items: center;
+            width: 100%;
+            height: 50px;
+            border-bottom: 1px solid var(--header-border);
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        h1 {
+            font-size: 32px;
+            margin: 0;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        #themeToggle {
+            position: absolute;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        #themeToggle:hover {
+            background: rgba(128, 128, 128, 0.2);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex-grow: 1;
         }
 
         #board {
             display: grid;
-            grid-template-columns: repeat(5, minmax(0, 1fr));
-            width: min(100%, 340px);
-            margin: 0 auto; /* center the board container */
-            justify-items: center; /* center tiles inside grid cells */
+            grid-template-columns: repeat(5, 1fr);
             gap: 5px;
-            margin-bottom: 8px;
+            padding: 10px;
+            box-sizing: border-box;
+            width: 350px;
+            max-width: 100%;
+            margin-bottom: auto;
         }
 
         .tile {
             width: 100%;
             aspect-ratio: 1;
-            border: 2px solid #565758;
-            background: #121213;
-            color: #fff;
-            font-size: clamp(20px, 5.5vw, 32px);
+            border: 2px solid var(--tile-border);
+            background: var(--tile-bg);
+            color: var(--text);
+            font-size: 2rem;
             font-weight: bold;
             display: flex;
             justify-content: center;
             align-items: center;
+            text-transform: uppercase;
             box-sizing: border-box;
+            transition: border-color 0.2s;
         }
 
         .tile.correct {
-            background: #538d4e;
-            border-color: #538d4e;
+            background: var(--correct);
+            border-color: var(--correct);
+            color: #fff;
         }
 
         .tile.present {
-            background: #b59f3b;
-            border-color: #b59f3b;
+            background: var(--present);
+            border-color: var(--present);
+            color: #fff;
         }
 
         .tile.absent {
-            background: #3a3a3c;
-            border-color: #565758;
+            background: var(--absent);
+            border-color: var(--absent-border);
+            color: #fff;
         }
 
         .keyboard {
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: var(--key-gap);
             width: 100%;
-            max-width: 100%;
-            padding: 8px;
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: var(--keyboard-padding);
             box-sizing: border-box;
+            margin-top: 20px;
+            user-select: none;
+            -webkit-user-select: none;
         }
 
         .key-row {
             display: flex;
-            gap: 4px;
+            gap: var(--key-gap);
+            justify-content: center;
+            width: 100%;
+        }
+
+        .key {
+            background: var(--key-bg);
+            color: var(--key-text);
+            border: none;
+            border-radius: 4px;
+            padding: 0;
+            height: var(--key-height);
+            flex: 1;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: var(--key-font-size);
+            transition: background-color 0.15s ease, color 0.15s ease, transform 0.05s ease, filter 0.05s ease;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+        }
+
+        @media (hover: hover) {
+            .key:hover {
+                filter: brightness(1.1);
+            }
+        }
+
+        .key:active {
+            transform: scale(0.92);
+            filter: brightness(0.9);
+        }
+
+        .key.wide {
+            flex: 1.5;
+        }
+
+        .key.correct { background: var(--correct); color: #fff; }
+        .key.present { background: var(--present); color: #fff; }
+        .key.absent { background: var(--absent); color: #fff; }
+
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            width: 100%;
             justify-content: center;
         }
 
         .toggle-button,
         .settings-button,
         .close-settings {
-            padding: 10px 16px;
-            background: #538d4e;
+            padding: 12px 20px;
+            background: var(--correct);
             border: none;
-            border-radius: 6px;
+            border-radius: 4px;
             color: #fff;
             font-size: 14px;
             cursor: pointer;
@@ -91,29 +225,74 @@
 
         .settings-button {
             display: none;
-            width: 100%;
-            max-width: 320px;
         }
 
-        .settings-panel {
-            display: none;
-            position: fixed;
-            inset: 0;
-            justify-content: center;
-            align-items: center;
-            background: rgba(0, 0, 0, 0.7);
-            z-index: 1000;
-            padding: 20px;
-        }
+        /* Mobile specific adjustments */
+        @media (max-width: 600px) {
+            #themeToggle {
+                display: none; /* Hide top-right toggle on phone */
+            }
 
-        @media (max-width: 560px) {
             #toggleKeyboard {
                 display: none;
             }
 
             .settings-button {
-                display: inline-flex;
+                display: block;
             }
+
+            #board {
+                width: 100%;
+                max-width: 300px;
+            }
+
+            :root {
+                --key-height: 48px;
+                --key-gap: 5px;
+                --key-font-size: 13px;
+                --keyboard-padding: 8px;
+            }
+            
+            .key.wide {
+                font-size: 11px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            :root {
+                --key-height: 44px;
+                --key-gap: 4px;
+                --key-font-size: 11px;
+                --keyboard-padding: 4px;
+            }
+            
+            .key.wide {
+                font-size: 9px;
+            }
+        }
+
+        @media (max-width: 340px) {
+            :root {
+                --key-height: 38px;
+                --key-gap: 3px;
+                --key-font-size: 10px;
+                --keyboard-padding: 2px;
+            }
+            
+            .key.wide {
+                font-size: 8px;
+            }
+        }
+
+        /* Settings Panel */
+        .settings-panel {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
         }
 
         .settings-panel.show {
@@ -121,119 +300,21 @@
         }
 
         .settings-content {
-            width: 100%;
-            max-width: 320px;
-            background: #1e1e1e;
-            border: 1px solid #565758;
+            background: var(--modal-bg);
+            padding: 30px;
             border-radius: 12px;
-            padding: 18px;
+            width: 80%;
+            max-width: 400px;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 15px;
+            box-shadow: 0 4px 23px 0 rgba(0,0,0,0.2);
         }
-
+        
         .settings-content h3 {
-            color: #fff;
-            margin: 0;
-            font-size: 18px;
-            text-align: center;
-        }
-
-        .settings-content .toggle-button {
             margin-top: 0;
         }
 
-        .toggle-button:hover,
-        .settings-button:hover,
-        .close-settings:hover {
-            background: #6ba85f;
-        }
-
-        .key {
-            padding: 0 1px;
-            background: #818384;
-            border: none;
-            border-radius: 8px;
-            color: #fff;
-            font-size: clamp(11px, 2.5vw, 14px);
-            font-weight: bold;
-            cursor: pointer;
-            flex: 1.15 1 0;
-            min-width: 0;
-            height: clamp(42px, 9.5vw, 52px);
-            transition: background 0.2s, transform 0.12s;
-        }
-
-        .key:hover {
-            transform: translateY(-1px);
-            background: #9ca3af;
-        }
-
-        .key.wide {
-            flex: 0 0 67px;
-            min-width: 0;
-            padding: 0 4px;
-            font-size: clamp(12px, 2.8vw, 14px);
-            line-height: 1;
-            white-space: nowrap;
-            max-width: 67px;
-        }
-
-        /* Bottom-row (row-3) letter keys: wider and centered, keep .wide (ENTER/BACK) unchanged */
-        #row-3 {
-            justify-content: center;
-            gap: 4px;
-        }
-
-        #row-3 .key:not(.wide) {
-            flex: 1.45 1 0;
-            min-width: 30px;
-        }
-
-        /* Bottom-row letter keys slightly wider (keep ENTER/BACK as .wide) */
-        #row-3 .key:not(.wide) {
-            flex: 1.45 1 0;
-            min-width: 28px;
-        }
-
-        @media (max-width: 360px) {
-            .key-row {
-                gap: 3px;
-            }
-
-            .key {
-                height: 38px;
-                font-size: 10px;
-            }
-            /* Mobile: bottom-row letter keys tuned for small screens */
-            #row-3 {
-                gap: 4px;
-            }
-
-            #row-3 .key:not(.wide) {
-                flex: 1.05 1 0;
-                min-width: 20px;
-            }
-
-            .key.wide {
-                flex: 0 0 56px;
-                font-size: 10px;
-                padding: 0 2px;
-                max-width: 56px;
-            }
-        }
-
-        .key.correct {
-            background: #538d4e;
-        }
-
-        .key.present {
-            background: #b59f3b;
-        }
-
-        .key.absent {
-            background: #3a3a3c;
-        }
 
         .modal {
             display: none;
@@ -306,8 +387,11 @@
     </style>
 </head>
 <body>
+    <header>
+        <h1>Wordle БГ</h1>
+        <button id="themeToggle" title="Смени тема">🌓</button>
+    </header>
     <div class="container">
-        <h1>Wordle България</h1>
         <div id="board"></div>
         <div class="keyboard">
             <div class="key-row" id="row-1"></div>
@@ -315,16 +399,20 @@
             <div class="key-row" id="row-3"></div>
         </div>
         <div id="statusMessage" class="status-message" aria-live="polite"></div>
-        <button id="toggleKeyboard" class="toggle-button">Смени клавиатура</button>
-        <button id="openSettings" class="settings-button">Настройки</button>
+        <div class="controls">
+            <button id="toggleKeyboard" class="toggle-button">Смени клавиатура</button>
+            <button id="openSettings" class="settings-button">Настройки</button>
+        </div>
     </div>
     <div id="settingsPanel" class="settings-panel">
         <div class="settings-content">
-            <h3>Телефонни настройки</h3>
+            <h3>Настройки</h3>
             <button id="toggleKeyboardMobile" class="toggle-button">Промени клавиатура</button>
+            <button id="themeToggleMobile" class="toggle-button">Промени Тема</button>
             <button id="closeSettings" class="close-settings">Затваряне</button>
         </div>
     </div>
+
 
     <div id="gameModal" class="modal">
         <div class="modal-content">
@@ -431,7 +519,41 @@
 
         renderKeyboard(currentLayout);
 
-        // 4. Input Handling
+        // 4. Theme Logic
+        const themeToggle = document.getElementById('themeToggle');
+        const themeToggleMobile = document.getElementById('themeToggleMobile');
+        
+        function setTheme(theme) {
+            if (theme === 'light') {
+                document.body.classList.add('light-mode');
+                themeToggle.innerText = "🌙";
+            } else {
+                document.body.classList.remove('light-mode');
+                themeToggle.innerText = "☀️";
+            }
+            localStorage.setItem('wordle-theme', theme);
+        }
+
+        // Auto-detect theme
+        const savedTheme = localStorage.getItem('wordle-theme');
+        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+
+        if (savedTheme) {
+            setTheme(savedTheme);
+        } else {
+            setTheme(systemPrefersDark.matches ? 'dark' : 'light');
+        }
+
+        // Handle toggle clicks
+        [themeToggle, themeToggleMobile].forEach(btn => {
+            btn.addEventListener('click', () => {
+                const isLight = document.body.classList.contains('light-mode');
+                setTheme(isLight ? 'dark' : 'light');
+            });
+        });
+
+        // 5. Input Handling
+
         window.addEventListener("keyup", (e) => {
             if (gameOver) return;
             if (e.key === "Enter") handleInput("ENTER");
@@ -538,9 +660,15 @@
         function updateKeyboard(letter, status) {
             const btn = Array.from(document.querySelectorAll(".key")).find(k => k.innerText === letter);
             if (btn) {
-                if (status === "correct") btn.className = "key correct";
-                else if (status === "present" && !btn.classList.contains("correct")) btn.className = "key present";
-                else if (status === "absent" && !btn.classList.contains("correct") && !btn.classList.contains("present")) btn.className = "key absent";
+                if (status === "correct") {
+                    btn.classList.remove("present", "absent");
+                    btn.classList.add("correct");
+                } else if (status === "present" && !btn.classList.contains("correct")) {
+                    btn.classList.remove("absent");
+                    btn.classList.add("present");
+                } else if (status === "absent" && !btn.classList.contains("correct") && !btn.classList.contains("present")) {
+                    btn.classList.add("absent");
+                }
             }
         }
     </script>
