@@ -22,6 +22,7 @@
             --key-gap: 6px;
             --key-font-size: 14px;
             --keyboard-padding: 10px;
+            --keyboard-bg: rgb(29, 29, 29);
         }
 
         body.light-mode {
@@ -35,6 +36,7 @@
             --absent: #787c7e;
             --absent-border: #787c7e;
             --header-border: #d3d6da;
+            --keyboard-bg: rgb(61, 61, 61);
         }
 
         body {
@@ -89,13 +91,14 @@
         }
 
         .container {
-            width: 100%;
-            max-width: 500px;
-            padding: 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            flex-grow: 1;
+           display: flex;
+           flex-direction: column;
+           align-items: center;
+           width: 100%;
+           max-width: 590px;
+           padding: 0 3%;       
+           box-sizing: border-box; 
+           margin: 0 auto;        
         }
 
         #board {
@@ -104,9 +107,9 @@
             gap: 5px;
             padding: 10px;
             box-sizing: border-box;
-            width: 350px;
+            width: 370px;
             max-width: 100%;
-            margin-bottom: auto;
+            margin-bottom: 7%;
         }
 
         .tile {
@@ -153,6 +156,10 @@
             margin-top: 20px;
             user-select: none;
             -webkit-user-select: none;
+            border-radius: 12px;
+            background: var(--keyboard-bg);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: background 0.3s ease, color 0.3s ease;
         }
 
         .key-row {
@@ -179,7 +186,7 @@
             font-size: var(--key-font-size);
             transition: background-color 0.15s ease, color 0.15s ease, transform 0.05s ease, filter 0.05s ease;
             touch-action: manipulation;
-            -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+            -webkit-tap-highlight-color: var(--keyboard-bg);
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
         }
 
@@ -204,6 +211,7 @@
 
         .controls {
             margin-top: 20px;
+            margin-bottom: 20px;
             display: flex;
             gap: 10px;
             width: 100%;
@@ -420,6 +428,9 @@
             <p id="modalMessage"></p>
             <button onclick="location.reload()">Нова Игра</button>
         </div>
+    </div>
+    <div class="bg-keyboard">
+
     </div>
 
     <script>
