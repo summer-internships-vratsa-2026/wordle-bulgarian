@@ -244,18 +244,6 @@
             cursor: pointer;
             font-weight: bold;
         }
-        .modal.show {
-    display: flex !important; /* Forces the modal to show when the class is added */
-}
-
-.modal-content {
-    background: var(--modal-bg);
-    padding: 30px;
-    border-radius: 12px;
-    max-width: 400px;
-    width: 90%;
-    color: var(--text);
-}
 
         .settings-button {
             display: none;
@@ -449,19 +437,12 @@
 
 
     <div id="gameModal" class="modal">
-    <div class="modal-content">
-        <h2 id="modalTitle">Как се играе?</h2>
-        <div id="modalMessage">
-            <p>Познайте скритата дума от <strong>5 букви</strong> за <strong>6 опита</strong>.</p>
-            <div style="text-align: left; margin: 20px 0;">
-                <p>🟩 <strong>Зелено:</strong> Буквата е в думата и на правилното място.</p>
-                <p>🟨 <strong>Жълто:</strong> Буквата е в думата, но на грешното място.</p>
-                <p>⬛ <strong>Сиво:</strong> Буквата изобщо не е в думата.</p>
-            </div>
+        <div class="modal-content">
+            <h2 id="modalTitle">Поздравления!</h2>
+            <p id="modalMessage"></p>
+            <button onclick="location.reload()">Нова Игра</button>
         </div>
-        <button id="modalButton" onclick="closeModal()">Започни играта</button>
     </div>
-</div>
     <div class="bg-keyboard">
 
     </div>
@@ -716,17 +697,8 @@
             }
         }
 
-        // Show tutorial on page load
-    // Show the tutorial as soon as the page loads
-    window.addEventListener('DOMContentLoaded', () => {
-        document.getElementById('gameModal').classList.add('show');
-    });
-
-    // Function to close the modal
-    function closeModal() {
-        document.getElementById('gameModal').classList.remove('show');
-    }
-    
+        // Start the process
+        initGame();
     </script>
 </body>
 </html>
